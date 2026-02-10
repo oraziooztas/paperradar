@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #030712;
+  --foreground: #f3f4f6;
 }
 
 @theme inline {
@@ -12,15 +12,47 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Smooth scroll for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #111827; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+/* Subtle glow for accent elements */
+.glow-indigo {
+  box-shadow: 0 0 80px -20px rgba(99, 102, 241, 0.4);
+}
+
+/* Gravity bar fill — used in the Gravity Engine section */
+@keyframes bar-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Radar concentric pulse rings — hero visual */
+@keyframes radar-pulse {
+  0%   { transform: scale(0.6); opacity: 0.5; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.radar-ring        { animation: radar-pulse 4s ease-out infinite; }
+.radar-ring-d1     { animation: radar-pulse 4s ease-out 1.3s infinite; }
+.radar-ring-d2     { animation: radar-pulse 4s ease-out 2.6s infinite; }
+
+/* Float animation for paper cards in hero */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.float-slow   { animation: float 6s ease-in-out infinite; }
+.float-medium { animation: float 4.5s ease-in-out 0.5s infinite; }
+.float-fast   { animation: float 3.5s ease-in-out 1s infinite; }
