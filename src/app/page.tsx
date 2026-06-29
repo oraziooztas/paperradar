@@ -1,6 +1,8 @@
 // page.tsx — PaperRadar landing page (server component)
 // Deps: none (pure Tailwind + inline SVG) | Used by: / route
 
+import Link from "next/link"
+
 // === TYPES ===
 
 interface GravityDimension {
@@ -139,7 +141,7 @@ function Navbar() {
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-gray-800/50 bg-gray-950/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <a href="/" className="flex items-center gap-2.5">
+        <Link href="/" className="flex items-center gap-2.5">
           {/* Radar icon */}
           <div className="relative flex h-8 w-8 items-center justify-center">
             <div className="absolute inset-0 rounded-full border border-indigo-500/30" />
@@ -149,7 +151,7 @@ function Navbar() {
           <span className="text-lg font-semibold tracking-tight text-gray-100">
             PaperRadar
           </span>
-        </a>
+        </Link>
         <div className="hidden items-center gap-8 md:flex">
           <a href="#features" className="text-sm text-gray-400 transition-colors hover:text-gray-100">
             Features

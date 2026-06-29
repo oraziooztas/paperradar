@@ -20,11 +20,6 @@ export default function MobileNav({ links }: MobileNavProps) {
   const menuRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
-  // Close menu when route changes
-  useEffect(() => {
-    setOpen(false)
-  }, [pathname])
-
   // Close on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -92,6 +87,7 @@ export default function MobileNav({ links }: MobileNavProps) {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setOpen(false)}
                   className={`block rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-gray-800/50 text-indigo-400'
