@@ -1,16 +1,41 @@
 name: CI
+
 on: [push, pull_request]
+
 jobs:
-  build:
+  ci:
+    name: typecheck · lint · test · build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - run: npx tsc --noEmit
-      - run: npm run lint --if-present
-      - run: npm run build
-      - run: npm run test --if-present
+          cache: npm
 
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+        env:
+          # Placeholder values — real secrets live in Vercel, not in CI.
+          # `next build` statically renders a few pages whose env is parsed by a
+          # Zod schema, so the build needs syntactically valid values to compile.
+          # These are dummy strings and grant access to nothing.
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
+          OPENAI_API_KEY: sk-placeholder
+          ANTHROPIC_API_KEY: sk-ant-placeholder
