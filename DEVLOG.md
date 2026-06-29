@@ -42,3 +42,14 @@
 - Migration 004: partial index on `stripe_customer_id` for webhook lookups
 - All files pass `npx tsc --noEmit` and `npm run build` with zero errors (19 routes)
 - **Next steps**: Phase 4 — Reddit/HuggingFace social signals, SEO, share-to-X, referral system
+
+## 2026-06-29 — Phase 3.5: Test suite + green CI + functional-core refactor
+
+- **Functional-core extraction** (pure, I/O-free, testable without mocks):
+  - `lib/pipeline/score-dimensions.ts` — clamp, WEIGHTS, TOP_LABS, the 5 deterministic dimension scorers + new `computeGravityScore()` (was inline in scorePaper). `score.ts` is now the imperative shell: fetch → AI novelty → combine → persist.
+  - `lib/email/unsubscribe-token.ts` — `signUnsubscribeToken` / `verifyUnsubscribeToken` (HMAC-SHA256, timing-safe). Route + send-digest now both delegate here, so sign/verify can't drift.
+- **Vitest + v8 coverage**: 78 unit tests, 4 suites (utils, score-dimensions, paywall, unsubscribe-token). Functional-core coverage 99% lines / 100% funcs / 97% branches.
+- **Bug found by a test**: `extractArxivId` dropped old-format arXiv ids whose subject class has a dot (`cs.CL`, `cond-mat.stat-mech`) — they fell through to the raw-URL fallback. Fixed the regex to allow `.` before the slash.
+- **CI was RED since 2026-02-18**: `next build` Zod-validates env while statically rendering pages, and the workflow supplied none. Rewrote `ci.yml`: typecheck → lint → test → build, placeholder env on build (real secrets stay in Vercel) + npm cache. Local run mirrors green: tsc 0 / eslint 0 errors / 78 tests / build 11 routes.
+- package.json: added `typecheck`, `test`, `test:watch`, `test:coverage`.
+- **Next steps**: Phase 4 (social signals, SEO, share-to-X, referral). Optional cleanup: Next 16 `middleware`→`proxy` rename + `turbopack.root` to silence the workspace-root warning.

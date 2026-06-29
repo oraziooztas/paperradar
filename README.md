@@ -1,5 +1,7 @@
 # PaperRadar
 
+[![CI](https://github.com/oraziooztas/paperradar/actions/workflows/ci.yml/badge.svg)](https://github.com/oraziooztas/paperradar/actions/workflows/ci.yml)
+
 AI-powered academic paper discovery platform that ingests papers from ArXiv, enriches them with Semantic Scholar metadata and Claude analysis, scores them across six weighted dimensions, and delivers personalized feeds using vector similarity.
 
 ## Features
@@ -34,6 +36,7 @@ AI-powered academic paper discovery platform that ingests papers from ArXiv, enr
 | Styling | Tailwind CSS v4 |
 | RSS Parsing | rss-parser (ArXiv Atom feeds) |
 | Validation | Zod v4 |
+| Testing | Vitest + v8 coverage (78 unit tests) |
 
 ## Getting Started
 
@@ -104,6 +107,23 @@ Open [http://localhost:3000](http://localhost:3000).
 npm run build
 ```
 
+## Testing
+
+The pure scoring and auth logic is split from its I/O (database, AI, Stripe) into a
+self-contained "functional core", so it can be unit-tested without mocks or a live
+database.
+
+```bash
+npm test                # Vitest unit suite — 78 tests
+npm run test:coverage   # + v8 coverage (functional core: ~99% lines, 100% functions)
+npm run typecheck       # tsc --noEmit
+```
+
+Tested modules: the Gravity Engine dimension scorers (`pipeline/score-dimensions`),
+ArXiv id parsing (`pipeline/utils`), tier/paywall rules (`paywall/check`), and the
+HMAC unsubscribe tokens (`email/unsubscribe-token`). CI runs typecheck → lint → test
+→ build on every push and pull request.
+
 ## Project Structure
 
 ```
@@ -140,7 +160,8 @@ paperradar/
 │   │   │   ├── enrich.ts             # Semantic Scholar + GitHub + Claude enrichment
 │   │   │   ├── embed.ts              # Batch vector embedding generation
 │   │   │   ├── cluster.ts            # K-means-style paper clustering
-│   │   │   └── score.ts              # 6-dimension Gravity scoring engine
+│   │   │   ├── score.ts              # Gravity scoring engine (imperative shell)
+│   │   │   └── score-dimensions.ts   # Pure 6-dimension scoring math (unit-tested)
 │   │   ├── feed/personalized.ts      # Vector-ranked and category-boosted feed generation
 │   │   ├── stripe/                   # Stripe client and tier mapping
 │   │   ├── email/                    # Resend client, digest sender, React Email templates

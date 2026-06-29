@@ -3,7 +3,7 @@
 // Used by: trigger/send-digests.ts (cron tasks)
 // Why: fetches personalized papers per user, renders digest email, sends via Resend in batches
 
-import { createHmac } from 'crypto'
+import { signUnsubscribeToken } from './unsubscribe-token'
 import { createServiceClient } from '@/lib/db/server'
 import { getPersonalizedFeed, getTrendingFeed } from '@/lib/feed/personalized'
 import type { FeedPaper } from '@/lib/feed/personalized'
@@ -35,9 +35,7 @@ interface BatchDigestStats {
  */
 export function generateUnsubscribeUrl(userId: string): string {
   const secret = getServerEnv().RESEND_API_KEY ?? 'paperradar-secret'
-  const token = createHmac('sha256', secret)
-    .update(userId)
-    .digest('hex')
+  const token = signUnsubscribeToken(userId, secret)
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   return `${baseUrl}/api/email/unsubscribe?userId=${userId}&token=${token}`
 }

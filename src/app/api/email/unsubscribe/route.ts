@@ -2,29 +2,17 @@
 // Deps: crypto, @/lib/env, @/lib/db/server | Used by: unsubscribe links in digest emails
 // Why: one-click unsubscribe via signed URL — verifies HMAC token, sets digest_frequency to 'none'
 
-import { createHmac, timingSafeEqual } from 'crypto'
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/db/server'
 import { getServerEnv } from '@/lib/env'
+import { verifyUnsubscribeToken } from '@/lib/email/unsubscribe-token'
 
 // === HELPERS ===
 
-/** Verify the HMAC token for a given userId */
+/** Verify the HMAC token for a given userId (delegates to the pure helper). */
 function verifyToken(userId: string, token: string): boolean {
   const secret = getServerEnv().RESEND_API_KEY ?? 'paperradar-secret'
-  const expected = createHmac('sha256', secret)
-    .update(userId)
-    .digest('hex')
-
-  // Use timing-safe comparison to prevent timing attacks
-  try {
-    const tokenBuffer = Buffer.from(token, 'hex')
-    const expectedBuffer = Buffer.from(expected, 'hex')
-    if (tokenBuffer.length !== expectedBuffer.length) return false
-    return timingSafeEqual(tokenBuffer, expectedBuffer)
-  } catch {
-    return false
-  }
+  return verifyUnsubscribeToken(userId, token, secret)
 }
 
 /** Build a simple HTML response page */

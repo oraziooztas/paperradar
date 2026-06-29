@@ -20,8 +20,11 @@ export function extractArxivId(url: string): string {
   const newFormat = url.match(/abs\/(\d{4}\.\d{4,5})/)
   if (newFormat) return newFormat[1]
 
-  // Old format: subject-class/NNNNNNN
-  const oldFormat = url.match(/abs\/([\w-]+\/\d+)/)
+  // Old format: archive[.subject-class]/NNNNNNN
+  // The subject class can contain a dot (e.g. "cs.CL", "cond-mat.stat-mech"),
+  // so allow '.' in the pre-slash segment — otherwise those ids fall through
+  // to the fallback and get stored as the full URL.
+  const oldFormat = url.match(/abs\/([\w.-]+\/\d+)/)
   if (oldFormat) return oldFormat[1]
 
   // Fallback: return the URL as-is (should not happen in practice)

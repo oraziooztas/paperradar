@@ -74,6 +74,7 @@ paperradar/
 │   │   ├── email/
 │   │   │   ├── resend.ts            # Resend client singleton
 │   │   │   ├── send-digest.ts       # Digest generation + batch sending
+│   │   │   ├── unsubscribe-token.ts # Pure HMAC sign/verify (functional core, unit-tested)
 │   │   │   └── templates/
 │   │   │       ├── digest.tsx        # React Email digest template (dark theme)
 │   │   │       └── welcome.tsx       # React Email welcome template
@@ -93,7 +94,8 @@ paperradar/
 │   │       ├── enrich.ts             # Semantic Scholar + GitHub + Claude Haiku
 │   │       ├── embed.ts              # OpenAI embeddings → pgvector
 │   │       ├── cluster.ts            # Cosine similarity clustering
-│   │       └── score.ts              # Gravity Engine (6-dimension scoring)
+│   │       ├── score.ts              # Gravity Engine — imperative shell (fetch/AI/persist)
+│   │       └── score-dimensions.ts   # Pure scoring math (functional core, unit-tested)
 │   ├── middleware.ts                  # Auth session refresh + protected routes
 │   ├── trigger/                      # trigger.dev v3 tasks
 │   │   ├── ingest-arxiv.ts          # Cron: every 2h
@@ -153,5 +155,20 @@ Stripe Checkout → webhook → tier upgrade (free → pro/team) → paywall lif
 | `/api/stripe/*` | Dynamic | Checkout, portal, webhook endpoints |
 | `/api/email/unsubscribe` | Dynamic | HMAC-verified digest unsubscribe |
 
-## Current Phase: 3 (Email Digest + Paywall) — COMPLETE
+## Testing
+
+Pure logic is split from I/O so it can be unit-tested without mocks. Tests live
+in co-located `__tests__/` dirs and run on Vitest.
+
+| Command | What it does |
+|---------|--------------|
+| `npm test` | Vitest unit suite — 78 tests over the functional core |
+| `npm run test:coverage` | Same + v8 coverage (core: ~99% lines, 100% funcs) |
+| `npm run typecheck` | `tsc --noEmit` |
+
+Covered modules: `pipeline/score-dimensions`, `pipeline/utils`, `paywall/check`,
+`email/unsubscribe-token`. CI (`.github/workflows/ci.yml`) runs typecheck → lint →
+test → build on every push and PR.
+
+## Current Phase: 3.5 (Test suite + green CI) — COMPLETE
 Next: Phase 4 (Social Signals + Growth)
