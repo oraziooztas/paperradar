@@ -53,7 +53,7 @@ AI-powered academic paper discovery platform that ingests papers from ArXiv, enr
 ### Installation
 
 ```bash
-git clone https://github.com/yourusername/paperradar.git
+git clone https://github.com/oraziooztas/paperradar.git
 cd paperradar
 npm install
 ```
